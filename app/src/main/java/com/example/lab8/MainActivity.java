@@ -62,6 +62,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            boolean allGranted = true;
+
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    break;
+                }
+            }
+
+            if (allGranted) {
+                Toast.makeText(this, "Разрешения получены", Toast.LENGTH_SHORT).show();
+                // Теперь можно безопасно запустить сервис
+                try {
+                    ContextCompat.startForegroundService(this, serviceIntent);
+                } catch (Exception e) {
+                    Toast.makeText(this, "Ошибка запуска сервиса после разрешения", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Разрешения не получены", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     public void nextActivity(View view) {
         if (isMusicServiceActive) {
             stopService(serviceIntent);
